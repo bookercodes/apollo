@@ -1,0 +1,13 @@
+{
+  "name": "apollo",
+  "version": "1.0.0",
+  "dependencies": {
+    "hapi": "^16.1.0",
+    "opn": "^4.0.2",
+    "typescript": "^2.1.4"
+  },
+  "scripts": {
+    "build": "tsc index.ts --outDir ./bin/",
+    "start": "yarn run build && node ./bin"
+  }
+}
