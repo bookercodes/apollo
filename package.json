@@ -3,11 +3,18 @@
   "version": "1.0.0",
   "dependencies": {
     "hapi": "^16.1.0",
+    "mysql": "^2.13.0",
     "opn": "^4.0.2",
+    "sequelize": "^3.29.0",
     "typescript": "^2.1.4"
   },
   "scripts": {
     "build": "tsc index.ts --outDir ./bin/",
     "start": "yarn run build && node ./bin"
+  },
+  "devDependencies": {
+    "@types/hapi": "^16.0.0",
+    "@types/opn": "^3.0.28",
+    "@types/sequelize": "^4.0.40"
   }
 }

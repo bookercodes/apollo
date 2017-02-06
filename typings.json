@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "hapi": "registry:dt/hapi#13.0.0+20161121214052",
-    "opn": "registry:dt/opn#3.0.2+20160620211513"
-  }
-}
