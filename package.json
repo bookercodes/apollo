@@ -2,9 +2,12 @@
   "name": "apollo",
   "version": "1.0.0",
   "dependencies": {
+    "bcrypt": "^1.0.2",
+    "bcryptjs": "^2.4.0",
     "hapi": "^16.1.0",
     "mysql": "^2.13.0",
     "opn": "^4.0.2",
+    "pify": "^2.3.0",
     "sequelize": "^3.29.0",
     "typescript": "^2.1.4"
   },
@@ -13,8 +16,11 @@
     "start": "yarn run build && node ./bin"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.0",
+    "@types/es6-shim": "^0.31.32",
     "@types/hapi": "^16.0.0",
     "@types/opn": "^3.0.28",
+    "@types/pify": "^0.0.28",
     "@types/sequelize": "^4.0.40"
   }
 }

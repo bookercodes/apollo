@@ -1,6 +1,8 @@
 import * as Hapi from "hapi"
 import * as opn from "opn"
 import * as Sequelize from "sequelize"
+import * as bcrypt from "bcryptjs"
+import * as pify from "pify"
 
 const server = new Hapi.Server()
 const port = 3000
@@ -43,6 +45,19 @@ const User = connection.define<UserInstance, UserAttributes>("user", {
   },
   password: { 
     type: Sequelize.TEXT
+  }
+}, {
+  hooks: {
+    beforeCreate (user)  {
+      const genSalt = pify(bcrypt.genSalt)
+      const hash = pify(bcrypt.hash)
+      // Asynchronously hash the password before saving it
+      return genSalt(10).then(function (salt) {
+        return hash(user.dataValues.password, salt).then(function (hash) {
+          user.dataValues.password = hash
+        })
+      })
+    }
   }
 })
 
