@@ -2,10 +2,9 @@
 
 ## Running Apollo
 
-We recommend [Yarn](https://github.com/yarnpkg/yarn) over npm. You'll also need [Typings](https://github.com/typings/typings) to be installed globally.
+You'll need [Yarn](https://github.com/yarnpkg/yarn) installed to run Apollo:
 
 ```
 yarn
-typings install
 yarn start
 ```
