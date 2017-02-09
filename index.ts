@@ -3,6 +3,8 @@ import * as opn from "opn"
 import * as Sequelize from "sequelize"
 import * as bcrypt from "bcryptjs"
 import * as pify from "pify"
+import * as chalk from "chalk"
+import * as httpStatusCode from "http-status-codes"
 
 const server = new Hapi.Server()
 const port = 3000
@@ -15,6 +17,21 @@ server.route({
   path: "/",
   handler: function (request, reply) {
     reply("Hello")
+  }
+})
+
+server.route({
+  method: "POST",
+  path: "/api/users",
+  handler: async function (request, reply) {
+    try {
+      await User.create({
+        ...request.payload
+      })
+      reply(httpStatusCode.CREATED)
+    } catch (error) {
+      reply(httpStatusCode.BAD_REQUEST)
+    }
   }
 })
 
@@ -41,32 +58,30 @@ interface UserInstance extends Sequelize.Instance<UserAttributes> {
 
 const User = connection.define<UserInstance, UserAttributes>("user", {
   username: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING,
+    unique: true
   },
-  password: { 
+  password: {
     type: Sequelize.TEXT
   }
 }, {
-  hooks: {
-    beforeCreate (user)  {
-      const genSalt = pify(bcrypt.genSalt)
-      const hash = pify(bcrypt.hash)
-      // Asynchronously hash the password before saving it
-      return genSalt(10).then(function (salt) {
-        return hash(user.dataValues.password, salt).then(function (hash) {
-          user.dataValues.password = hash
+    hooks: {
+      beforeCreate(user) {
+        const genSalt = pify(bcrypt.genSalt)
+        const hash = pify(bcrypt.hash)
+        return genSalt(10).then(function (salt) {
+          return hash(user.dataValues.password, salt).then(function (hash) {
+            user.dataValues.password = hash
+          })
         })
-      })
+      }
     }
-  }
-})
+  })
 
 connection.sync({
   force: true
-}).then(function () {
-  return User.create({
-    username: "username",
-    password: "password"
-  })
-}).then(function (user) {
+})
+
+process.on("unhandledRejection", reason => {
+  console.error(`Oh no! An unhandled promise rejection occured: ${chalk.bgRed(reason)}`)
 })
