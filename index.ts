@@ -2,7 +2,7 @@ import * as Hapi from "hapi"
 import * as opn from "opn"
 import * as Sequelize from "sequelize"
 import * as bcrypt from "bcryptjs"
-import * as pify from "pify"
+import * as promisify from "pify"
 import * as chalk from "chalk"
 import * as httpStatusCode from "http-status-codes"
 
@@ -66,14 +66,9 @@ const User = connection.define<UserInstance, UserAttributes>("user", {
   }
 }, {
     hooks: {
-      beforeCreate(user) {
-        const genSalt = pify(bcrypt.genSalt)
-        const hash = pify(bcrypt.hash)
-        return genSalt(10).then(function (salt) {
-          return hash(user.dataValues.password, salt).then(function (hash) {
-            user.dataValues.password = hash
-          })
-        })
+      async beforeCreate(user) {
+        const hash = await promisify(bcrypt.hash)(user.dataValues.password, 10)
+        user.dataValues.password = hash
       }
     }
   })
