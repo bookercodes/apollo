@@ -5,6 +5,7 @@ import * as bcrypt from "bcryptjs"
 import * as promisify from "pify"
 import * as chalk from "chalk"
 import * as httpStatusCode from "http-status-codes"
+import * as fs from "fs"
 
 const server = new Hapi.Server()
 const port = 3000
@@ -31,6 +32,43 @@ server.route({
       reply(httpStatusCode.CREATED)
     } catch (error) {
       reply(httpStatusCode.BAD_REQUEST)
+    }
+  }
+})
+
+server.route({
+  method: "POST",
+  path: "/{username}/files",
+  config: {
+    payload: {
+      output: 'stream',
+      parse: true,
+      allow: 'multipart/form-data'
+    },
+    handler: async function (request, reply) {
+      if (!request.payload) {
+        return reply("payload is empty").code(httpStatusCode.BAD_REQUEST)
+      }
+      const {file} = request.payload
+      if(!file){
+        return reply("no key file").code(httpStatusCode.BAD_REQUEST)
+      }
+      const {username} = request.params
+      const path = `${__dirname}/uploads/${username}/`
+      if (!fs.existsSync(path)){
+        fs.mkdirSync(path)
+      }
+      const stream = fs.createWriteStream(`${path}/${file.hapi.filename}`);
+      file.on('error', function (error) { 
+        console.error(`Oh no! An occured when writing file: ${chalk.bgRed(error)}`)
+      })
+      file.pipe(stream)
+      file.on('end', function (err) { 
+        if (err) {
+          return reply(400)
+        }
+        reply(201)
+      })
     }
   }
 })
