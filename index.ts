@@ -6,6 +6,21 @@ import * as promisify from "pify"
 import * as chalk from "chalk"
 import * as httpStatusCode from "http-status-codes"
 import * as fs from "fs"
+import * as dotenv from "dotenv"
+import AWS = require("aws-sdk")
+
+AWS.config.update({
+  region: 'us-east-1',
+  // AWS will load these environment variables automatically but
+  // I specify them here anywhere for readability...
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID, 
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY 
+})
+
+const s3 = new AWS.S3()
+
+dotenv.config()
+
 
 const server = new Hapi.Server()
 const port = 3000
