@@ -11,8 +11,7 @@ import AWS = require("aws-sdk")
 
 AWS.config.update({
   region: 'us-east-1',
-  // AWS will load these environment variables automatically but
-  // I specify them here anywhere for readability...
+  signatureVersion: 'v4',
   accessKeyId: process.env.AWS_ACCESS_KEY_ID, 
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY 
 })
@@ -69,21 +68,22 @@ server.route({
         return reply("no key file").code(httpStatusCode.BAD_REQUEST)
       }
       const {username} = request.params
-      const path = `${__dirname}/uploads/${username}/`
-      if (!fs.existsSync(path)){
-        fs.mkdirSync(path)
-      }
-      const stream = fs.createWriteStream(`${path}/${file.hapi.filename}`);
-      file.on('error', function (error) { 
-        console.error(`Oh no! An occured when writing file: ${chalk.bgRed(error)}`)
-      })
-      file.pipe(stream)
-      file.on('end', function (err) { 
-        if (err) {
-          return reply(400)
-        }
-        reply(201)
-      })
+      console.log(file)
+      const contentType = file.hapi.headers['content-type'];
+      s3
+        .upload({
+          Bucket: process.env.BUCKET,
+          Key: `${username}/${file.hapi.filename}`,
+          Body: file,
+          ContentType: contentType
+        })
+        .promise()
+        .catch(err => {
+          console.error(err)
+          reply(httpStatusCode.INTERNAL_SERVER_ERROR)
+        }).then(() => {
+          reply(httpStatusCode.OK)
+        })
     }
   }
 })
