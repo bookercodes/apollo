@@ -1,5 +1,4 @@
 import * as Hapi from "hapi"
-import * as opn from "opn"
 import * as Sequelize from "sequelize"
 import * as bcrypt from "bcryptjs"
 import * as promisify from "pify"
@@ -93,7 +92,6 @@ server.start(error => {
   } else {
     const address = `http://localhost:${port}`
     console.log(`🚀 Server running ${address}`)
-    opn(address)
   }
 })
 
