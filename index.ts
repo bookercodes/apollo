@@ -68,7 +68,6 @@ server.route({
         return reply("no key file").code(httpStatusCode.BAD_REQUEST)
       }
       const {username} = request.params
-      console.log(file)
       const contentType = file.hapi.headers['content-type'];
       s3
         .upload({
@@ -78,11 +77,11 @@ server.route({
           ContentType: contentType
         })
         .promise()
+        .then(response => reply(httpStatusCode.CREATED))
         .catch(err => {
-          console.error(err)
+          console.error(`Oh no! Something went wrong when uploading file to S3: ${chalk.bgRed(err)}`)
           reply(httpStatusCode.INTERNAL_SERVER_ERROR)
-        }).then(() => {
-          reply(httpStatusCode.OK)
+          console.log(err)
         })
     }
   }
