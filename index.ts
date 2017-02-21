@@ -8,6 +8,8 @@ import * as fs from "fs"
 import * as dotenv from "dotenv"
 import AWS = require("aws-sdk")
 
+dotenv.config()
+
 AWS.config.update({
   region: 'us-east-1',
   signatureVersion: 'v4',
@@ -16,9 +18,6 @@ AWS.config.update({
 })
 
 const s3 = new AWS.S3()
-
-dotenv.config()
-
 
 const server = new Hapi.Server()
 const port = 3000
